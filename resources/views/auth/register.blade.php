@@ -15,9 +15,6 @@
     <!-- Kanan: Form -->
     <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-8 bg-white min-h-screen">
         <div class="w-full max-w-md py-12">
-            <a href="{{ url('/') }}" class="text-sm text-gray-500 hover:text-black flex items-center gap-2 mb-6">
-                <span>&larr;</span> Kembali
-            </a>
             
             <!-- Tampilkan Error -->
             @if ($errors->any())

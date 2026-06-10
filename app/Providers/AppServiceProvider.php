@@ -22,7 +22,15 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
             if (auth()->check()) {
-                $view->with('globalCart', \App\Models\CartItem::with('product')->where('user_id', auth()->id())->get());
+                $cartItems = \App\Models\CartItem::with('product')->where('user_id', auth()->id())->get()
+                    ->filter(function ($item) {
+                        if (!$item->product || $item->product->status === 'sold') {
+                            $item->delete(); // Auto clean up
+                            return false;
+                        }
+                        return true;
+                    });
+                $view->with('globalCart', $cartItems);
             } else {
                 $view->with('globalCart', collect([]));
             }

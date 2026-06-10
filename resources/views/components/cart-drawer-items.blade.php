@@ -9,7 +9,7 @@
             @php $p = $item->product; @endphp
             <div class="flex gap-3 border-b border-gray-100 pb-4">
                 <div class="w-16 h-16 bg-[#f2f2f2] flex-shrink-0">
-                    <img src="{{ asset('storage/' . ($p->image ?? $p['image'])) }}" alt="{{ $p->name }}" class="w-full h-full object-cover">
+                    <img src="{{ $p->imageUrl() }}" alt="{{ $p->name }}" class="w-full h-full object-cover">
                 </div>
             <div class="flex-1 min-w-0">
                 <div class="flex justify-between items-start gap-2">

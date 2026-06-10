@@ -11,36 +11,21 @@ class OrderController extends Controller
     public function index()
     {
         $orders = auth()->user()->orders()
+            ->with('product')
             ->latest()
             ->get();
 
-        return view('user.history', compact('orders'));
+        return view('user.orders', compact('orders'));
     }
 
-    public function store(Request $request)
+    public function show($id)
     {
-        $cartItems = auth()->user()->cartItems()
+        $order = auth()->user()->orders()
             ->with('product')
-            ->get()
-            ->filter(fn ($item) => $item->product && !$item->product->sold);
+            ->findOrFail($id);
 
-        if ($cartItems->isEmpty()) {
-            return back()->withErrors(['cart' => 'Keranjang kosong']);
-        }
+        $hasReviewed = auth()->user()->reviews()->exists();
 
-        foreach ($cartItems as $item) {
-            auth()->user()->orders()->create([
-                'product_id' => $item->product_id,
-                'product_name' => $item->product->name,
-                'username' => auth()->user()->username,
-                'price' => $item->product->price,
-            ]);
-
-            $item->product->update(['sold' => true]);
-            $item->delete();
-        }
-
-        return redirect()->route('user.history.index')
-            ->with('success', 'Checkout berhasil! Silakan hubungi admin via WhatsApp untuk pembayaran.');
+        return view('user.order-detail', compact('order', 'hasReviewed'));
     }
 }

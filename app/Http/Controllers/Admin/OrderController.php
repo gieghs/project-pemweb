@@ -16,13 +16,15 @@ class OrderController extends Controller
 
     public function markPaid($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('product')->findOrFail($id);
         $order->update(['status' => 'Paid']);
 
         if ($order->product) {
-            $order->product->update(['sold' => true]);
+            $order->product->update([
+                'status' => 'sold',
+            ]);
         }
 
-        return back()->with('success', 'Pesanan lunas dan produk otomatis ditandai Sold!');
+        return back()->with('success', 'Pesanan ditandai lunas.');
     }
 }

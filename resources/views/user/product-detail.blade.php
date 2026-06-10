@@ -5,18 +5,22 @@
     
     <div class="w-full md:w-[55%] flex flex-col gap-4">
          <div id="image-container" class="w-full aspect-[4/5] relative overflow-hidden cursor-zoom-in group" onmousemove="zoomImage(event)" onmouseleave="resetZoom()">
-        <img id="main-image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover mix-blend-multiply transition-transform duration-200 origin-center">
+        <img id="main-image" src="{{ $product->imageUrl() }}" alt="{{ $product->name }}" class="w-full h-full object-cover mix-blend-multiply transition-transform duration-200 origin-center">
     </div>
     
          <div class="grid grid-cols-4 gap-4">
-                 <button onclick="changeImage('{{ asset('storage/' . $product->image) }}')" class="aspect-square border border-transparent hover:border-black focus:border-black transition-colors">
-            <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-full object-cover mix-blend-multiply" alt="Depan">
-        </button>
-        
-                 @if($product->image_2)
-        <button onclick="changeImage('{{ asset('storage/' . $product->image_2) }}')" class="aspect-square border border-transparent hover:border-black focus:border-black transition-colors">
-            <img src="{{ asset('storage/' . $product->image_2) }}" class="w-full h-full object-cover mix-blend-multiply" alt="Samping Kiri">
-        </button>
+        @foreach ($product->images->take(4) as $image)
+            @php 
+                $path = str_starts_with($image->image_path, 'http') ? $image->image_path : asset('storage/' . $image->image_path);
+            @endphp
+            <button onclick="changeImage('{{ $path }}')" class="aspect-square border border-transparent hover:border-black focus:border-black transition-colors">
+                <img src="{{ $path }}" class="w-full h-full object-cover mix-blend-multiply" alt="{{ $product->name }} Thumbnail">
+            </button>
+        @endforeach
+        @if ($product->images->isEmpty())
+            <button onclick="changeImage('{{ $product->imageUrl() }}')" class="aspect-square border border-transparent hover:border-black focus:border-black transition-colors">
+                <img src="{{ $product->imageUrl() }}" class="w-full h-full object-cover mix-blend-multiply" alt="{{ $product->name }} Thumbnail">
+            </button>
         @endif
     </div>
 </div>
@@ -27,8 +31,9 @@
         </div>
         
         <h1 class="text-2xl font-bold uppercase tracking-wider mb-2">{{ $product->name }}</h1>
-        <p class="text-sm font-bold mb-10">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+        <p class="text-sm font-bold mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
 
+        @if ($product->isAvailable())
         <form action="{{ route('user.cart.store') }}" method="POST" class="w-full">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -59,6 +64,10 @@
                 </button>
             @endauth
         </form>
+        @else
+        <div class="w-full bg-gray-100 text-gray-500 py-5 text-[11px] font-bold tracking-[0.2em] uppercase text-center mb-3">SOLD</div>
+        <div class="w-full bg-gray-100 text-gray-400 border border-gray-200 py-5 text-[11px] font-bold tracking-[0.2em] uppercase text-center mb-10">CHECKOUT</div>
+        @endif
 
         <div class="border-t border-gray-200 pt-6">
             <div class="flex justify-between items-center mb-4">

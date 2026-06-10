@@ -97,7 +97,14 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($productData as $data) {
-            $products->push(Product::create($data));
+            $imageUrl = $data['image'];
+            unset($data['image']);
+            $product = Product::create($data);
+            $product->images()->create([
+                'image_path' => $imageUrl,
+                'sort_order' => 1,
+            ]);
+            $products->push($product);
         }
 
         // Mark one product as sold

@@ -37,7 +37,13 @@
             @foreach ($filteredProducts as $product)
                 <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                     onclick="window.location='{{ url('/user/products/' . ($product->id ?? $product['id'])) }}'">
-                    <img src="{{ asset('storage/' . ($product->image ?? $product['image'])) }}" alt="{{ $product->name ?? $product['name'] }}" class="w-full h-48 object-cover" />
+                    <div class="relative">
+                        <img src="{{ $product->imageUrl() }}" alt="{{ $product->name ?? $product['name'] }}" class="w-full h-48 object-cover" />
+                        @php $pStatus = $product->status ?? $product['status'] ?? 'available'; @endphp
+                        @if ($pStatus === 'sold')
+                        <span class="absolute top-2 left-2 bg-gray-100 text-gray-500 px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase">SOLD</span>
+                        @endif
+                    </div>
                     <div class="p-4">
                         <div class="flex items-center justify-between mb-2">
                             <span class="inline-block bg-black text-white px-2 py-1 rounded text-xs font-semibold">{{ $product->category ?? $product['category'] }}</span>
@@ -46,6 +52,8 @@
                         <h3 class="font-bold text-lg mb-2">{{ $product->name ?? $product['name'] }}</h3>
                         <p class="text-gray-600 text-sm mb-2 line-clamp-2">{{ $product->description ?? $product['description'] }}</p>
                         <p class="font-bold text-xl mb-3">Rp {{ number_format($product->price ?? $product['price'], 0, ',', '.') }}</p>
+                        @php $pStatus2 = $product->status ?? $product['status'] ?? 'available'; @endphp
+                        @if ($pStatus2 === 'available')
                         <form action="{{ route('user.cart.store') }}" method="POST" class="w-full" onclick="event.stopPropagation()">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id ?? $product['id'] }}">
@@ -54,6 +62,9 @@
                                 Tambah ke Keranjang
                             </button>
                         </form>
+                        @else
+                        <div class="w-full bg-gray-100 text-gray-500 px-4 py-2 rounded-lg text-center text-[11px] font-bold uppercase">SOLD</div>
+                        @endif
                     </div>
                 </div>
             @endforeach

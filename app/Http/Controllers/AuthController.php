@@ -52,6 +52,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|max:20',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
@@ -59,6 +60,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'username' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'role' => 'user',
         ]);
@@ -74,6 +76,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

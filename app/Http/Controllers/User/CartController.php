@@ -28,10 +28,11 @@ class CartController extends Controller
 
         $product = Product::findOrFail($validated['product_id']);
 
-        if ($product->sold) {
+        if ($product->isSold()) {
+            $msg = 'Produk ini sudah terjual.';
             return $request->wantsJson()
-                ? $this->jsonResponse(false, 'Produk sudah terjual')
-                : back()->with('error', 'Produk sudah terjual');
+                ? $this->jsonResponse(false, $msg)
+                : back()->with('error', $msg);
         }
 
         $exists = auth()->user()->cartItems()
@@ -73,7 +74,7 @@ class CartController extends Controller
         $cartItems = auth()->user()->cartItems()
             ->with('product')
             ->get()
-            ->filter(fn ($item) => $item->product && !$item->product->sold)
+            ->filter(fn ($item) => $item->product && !$item->product->isSold())
             ->values();
 
         $totalPrice = $cartItems->sum(fn ($item) => $item->product->price);

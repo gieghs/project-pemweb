@@ -40,10 +40,6 @@
                     <label class="block text-sm font-bold mb-2">Password</label>
                     <input type="password" name="password" placeholder="Masukkan password" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black" required>
                 </div>
-                <div class="flex items-center">
-                    <input type="checkbox" name="remember" id="remember" class="mr-2 rounded border-gray-300 text-black focus:ring-black">
-                    <label for="remember" class="text-sm text-gray-600">Ingat saya</label>
-                </div>
                 
                 <button type="submit" class="w-full bg-black text-white rounded-lg py-3 text-sm font-bold hover:bg-gray-800 transition-colors">Masuk</button>
             </form>

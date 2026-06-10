@@ -73,6 +73,13 @@ class CheckoutController extends Controller
             return redirect()->route('shop')->with('info', 'Keranjang belanja kosong.');
         }
 
+        foreach ($cartItems as $item) {
+            if (!$item->product || $item->product->isSold()) {
+                $item->delete();
+                return redirect()->route('cart.index')->with('error', 'Produk ini sudah terjual.');
+            }
+        }
+
         $subtotal = 0;
         foreach ($cartItems as $item) {
             $price = $item->product->price ?? $item->product->harga ?? 0;
@@ -90,7 +97,7 @@ class CheckoutController extends Controller
                 'price' => ($item->product->price ?? $item->product->harga ?? 0) * ($item->quantity ?? $item->qty ?? 1),
                 'payment_method' => $request->payment_method,
                 'shipping_cost' => $request->shipping_cost,
-                'status' => 'Pending',
+                'status' => 'Pending Payment',
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'district' => $request->subdistrict_name,
@@ -99,7 +106,7 @@ class CheckoutController extends Controller
                 'postal_code' => $request->postal_code,
             ]);
 
-            $item->delete();
+            \App\Models\CartItem::where('id', $item->id)->delete();
             $createdOrders[] = $order;
         }
 
@@ -120,6 +127,11 @@ class CheckoutController extends Controller
         $subtotal = $allOrders->sum('price');
         $shippingCost = $allOrders->first()->shipping_cost ?? 0;
         $grandTotal = $subtotal + $shippingCost;
+
+        if (strtolower($order->payment_method) === 'qris') {
+            $qrisImage = \App\Models\Setting::where('key', 'qris_image')->first()->value ?? null;
+            return view('user.checkout-qris', compact('order', 'subtotal', 'shippingCost', 'grandTotal', 'qrisImage'));
+        }
 
         return view('user.checkout-success', compact('order', 'subtotal', 'shippingCost', 'grandTotal'));
     }

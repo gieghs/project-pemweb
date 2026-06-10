@@ -44,7 +44,7 @@
                 @endphp
                 <div class="border border-gray-200 p-4">
                     <div class="flex gap-4">
-                        <img src="{{ asset('storage/' . ($itemProduct->image ?? $itemProduct['image'])) }}" alt="{{ $itemProduct->name ?? $itemProduct['name'] }}" class="w-24 h-24 object-cover flex-shrink-0" />
+                        <img src="{{ $itemProduct->imageUrl() }}" alt="{{ $itemProduct->name ?? $itemProduct['name'] }}" class="w-24 h-24 object-cover flex-shrink-0" />
                         <div class="flex-1 min-w-0">
                             <div class="flex items-start justify-between mb-1">
                                 <div class="min-w-0 mr-2">

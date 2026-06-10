@@ -10,7 +10,7 @@ class ProductController extends Controller
     public function index()
     {
         return view('user.products', [
-            'products' => Product::where('sold', false)->get(),
+            'products' => Product::with('images')->latest()->get(),
         ]);
     }
 

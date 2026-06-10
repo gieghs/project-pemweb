@@ -25,7 +25,7 @@ Route::middleware('guest')->group(function () {
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/shop', function (Request $request) {
-    $query = Product::where('sold', false);
+    $query = Product::with('images')->where('status', '!=', 'sold');
 
     if ($request->filled('category') && $request->category !== 'ALL') {
         $query->where('category', $request->category);
@@ -76,7 +76,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/user/cart', [CartController::class, 'store'])->name('user.cart.store');
     Route::delete('/cart/{id}', [\App\Http\Controllers\User\CartController::class, 'destroy'])->name('cart.destroy');
-    Route::get('/user/history', function () { return view('user.history'); })->name('user.history');
+    Route::get('/user/orders', [OrderController::class, 'index'])->name('user.orders.index');
+    Route::get('/user/orders/{id}', [OrderController::class, 'show'])->name('user.orders.show');
     Route::get('/user/reviews', [\App\Http\Controllers\User\ReviewController::class, 'index'])->name('user.reviews');
     Route::post('/user/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('user.reviews.store');
     Route::get('/user/settings', [ProfileController::class, 'edit'])->name('user.settings');
@@ -94,8 +95,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
     Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
     Route::post('/products/{product}/sold', [AdminProductController::class, 'markSold'])->name('products.markSold');
-    Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
-    Route::patch('/orders/{id}/mark-paid', [\App\Http\Controllers\Admin\OrderController::class, 'markPaid'])->name('orders.markPaid');
+    Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::patch('/orders/{id}/mark-paid', [App\Http\Controllers\Admin\OrderController::class, 'markPaid'])->name('orders.markPaid');
+    Route::post('/orders/{id}/update-status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
     Route::post('/reviews/{review}/reply', [AdminReviewController::class, 'reply'])->name('reviews.reply');
 });

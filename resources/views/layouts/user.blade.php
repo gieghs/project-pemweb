@@ -32,23 +32,7 @@
         @yield('content')
     </main>
 
-    @include('components.footer')
-
-    @if (isset($showReviewPopup) && $showReviewPopup)
-        <div id="review-popup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div class="bg-white p-8 max-w-md w-full text-center">
-                <div class="mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="#EAB308" stroke="#EAB308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                </div>
-                <h3 class="text-2xl font-bold mb-3">Bagaimana pengalaman Anda?</h3>
-                <p class="text-gray-600 mb-6">Kami sangat menghargai pendapat Anda! Berikan ulasan untuk membantu kami meningkatkan layanan.</p>
-                <div class="flex flex-col gap-3">
-                    <a href="{{ url('/user/reviews') }}" class="w-full bg-black text-white px-6 py-3 hover:bg-gray-800 font-semibold">Kirim Ulasan</a>
-                    <button onclick="this.closest('#review-popup').classList.add('hidden')" class="w-full bg-gray-200 text-black px-6 py-3 hover:bg-gray-300 font-semibold">Ingatkan Nanti</button>
-                </div>
-            </div>
-        </div>
-    @endif
+    @include('components.footer')s
     <!-- Login Modal (for guests) -->
     <div id="login-modal" class="fixed inset-0 bg-black/40 z-[130] hidden items-center justify-center p-4" onclick="hideLoginModal(event)">
         <div class="bg-white p-8 max-w-sm w-full text-center" onclick="event.stopPropagation()">
@@ -80,7 +64,7 @@
         <div id="cart-drawer-body" class="flex-1 flex flex-col">
             @php
                 $_cartItems = auth()->check()
-                    ? auth()->user()->cartItems()->with('product')->get()->filter(fn ($i) => $i->product && !$i->product->sold)->values()
+                    ? auth()->user()->cartItems()->with('product')->get()->filter(fn ($i) => $i->product && !$i->product->isSold())->values()
                     : collect([]);
                 $_totalPrice = $_cartItems->sum(fn ($i) => $i->product->price);
             @endphp
@@ -106,10 +90,10 @@
 
                 <!-- Menu Items -->
                 <nav class="flex-1 flex flex-col gap-4 mb-8">
-                    <a href="{{ route('user.history') }}" class="group flex items-center justify-between px-4 py-5 border border-black bg-white hover:bg-black hover:text-white transition-all duration-200 ease-out">
+                    <a href="{{ route('user.orders.index') }}" class="group flex items-center justify-between px-4 py-5 border border-black bg-white hover:bg-black hover:text-white transition-all duration-200 ease-out">
                         <div class="flex items-center gap-4">
-                            <svg class="w-5 h-5 text-black group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="text-[11px] font-bold tracking-[0.2em] uppercase">HISTORY BELANJA</span>
+                            <svg class="w-5 h-5 text-black group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            <span class="text-[11px] font-bold tracking-[0.2em] uppercase">PESANAN SAYA</span>
                         </div>
                         <svg class="w-4 h-4 text-black group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </a>

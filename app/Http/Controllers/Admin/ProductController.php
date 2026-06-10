@@ -11,7 +11,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->get();
+        $products = Product::with('images')->latest()->get();
 
         return view('admin.products', compact('products'));
     }
@@ -22,10 +22,13 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'image_1' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'image_2' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'category' => 'required|string',
+        ], [
+            'image.required' => 'Foto produk wajib diunggah.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format foto harus JPG, JPEG, PNG, atau WEBP.',
+            'image.max' => 'Ukuran foto produk maksimal 2 MB.',
         ]);
 
         $data = [
@@ -33,25 +36,25 @@ class ProductController extends Controller
             'description' => $request->description,
             'price' => $request->price,
             'category' => $request->category,
+            'status' => $request->status ?? 'available',
         ];
 
+        $product = Product::create($data);
+
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
-        } else {
-            $data['image'] = 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=400';
+            $path = $request->file('image')->store('products', 'public');
+            $product->images()->create([
+                'image_path' => $path,
+                'sort_order' => 1,
+            ]);
         }
-
-        $data['status'] = $request->status ?? 'Available';
-        $data['sold'] = $request->sold ?? 0;
-
-        Product::create($data);
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
 
     public function markSold(Request $request, Product $product)
     {
-        if ($product->sold) {
+        if ($product->isSold()) {
             return back()->with('info', 'Produk sudah ditandai terjual');
         }
 
@@ -73,7 +76,7 @@ class ProductController extends Controller
             ]);
         }
 
-        $product->update(['sold' => true]);
+        $product->update(['status' => Product::STATUS_SOLD]);
 
         return back()->with('success', "Produk {$product->name} ditandai terjual");
     }

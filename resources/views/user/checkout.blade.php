@@ -149,11 +149,6 @@
                 </label>
             </div>
 
-            <label class="flex items-start gap-3 mb-6 cursor-pointer">
-                <input type="checkbox" class="mt-0.5 accent-black">
-                <span class="text-[10px] text-gray-600 leading-relaxed">I have read and agree to the terms and conditions</span>
-            </label>
-
 <button type="submit" class="w-full bg-black text-white font-bold text-[11px] tracking-[0.2em] uppercase py-4 hover:bg-gray-800 transition-colors">
     PLACE ORDER
 </button>

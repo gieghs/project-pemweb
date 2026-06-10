@@ -33,7 +33,10 @@
                 @foreach ($availableProducts as $product)
                 <div class="group flex flex-col mb-8">
                     <a href="{{ url('/user/products/' . $product->id) }}" class="relative block w-full aspect-square bg-gray-50 overflow-hidden">
-                        <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110">
+                        <img src="{{ $product->imageUrl() }}" class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110">
+                        @if ($product->isSold())
+                        <span class="absolute top-2 left-2 bg-gray-100 text-gray-500 px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase">SOLD</span>
+                        @endif
                     </a>
                     <div class="flex flex-col mt-4">
                         <a href="{{ url('/user/products/' . $product->id) }}" class="text-sm font-bold text-black uppercase tracking-widest hover:text-gray-500 transition-colors">
@@ -60,7 +63,7 @@
             <div class="mb-8">
                 <h3 class="text-[11px] font-bold tracking-[0.2em] uppercase mb-4 text-black">SORT BY</h3>
                 <div class="grid grid-cols-2 gap-2">
-                    @php $sortOptions = ['default' => 'SELECTED', 'price_asc' => 'PRICE LOW TO HIGH', 'price_desc' => 'PRICE HIGH TO LOW', 'newest' => 'NEW IN']; @endphp
+                    @php $sortOptions = ['default' => 'SELECTED', 'price_asc' => 'PRICE LOW TO HIGH', 'price_desc' => 'PRICE HIGH TO LOW']; @endphp
                     @foreach ($sortOptions as $sortVal => $sortLabel)
                         <label class="cursor-pointer w-full">
                             <input type="radio" name="sort" value="{{ $sortVal }}" class="hidden peer" {{ (request('sort') == $sortVal) || (!request('sort') && $sortVal == 'default') ? 'checked' : '' }}>
